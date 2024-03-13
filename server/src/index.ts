@@ -1,16 +1,19 @@
 import 'source-map-support/register';
 
 // 3p
-import { Config, createApp, displayServerURL } from '@foal/core';
+import { Config, createApp, createService, displayServerURL } from '@foal/core';
 
 // App
 import { AppController } from './app/app.controller';
 import { dataSource } from './db';
+import { WorkerManager } from './app/workers';
 
 async function main() {
   await dataSource.initialize();
 
   const app = await createApp(AppController);
+  const workers = createService(WorkerManager);
+  workers.start();
 
   const port = Config.get('port', 'number', 3001);
   app.listen(port, () => displayServerURL(port));
